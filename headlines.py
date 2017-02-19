@@ -1,7 +1,9 @@
 #! /usr/bin/env python3
 
+import datetime
 import feedparser
 from flask import Flask
+from flask import make_response
 from flask import render_template
 from flask import request
 import json
@@ -23,42 +25,66 @@ DEFAULTS = {'publication':'bbc',
             'currency_from': 'GBP',
             'currency_to': 'USD'}
 
+def get_value_with_fallback(key):
+    if request.args.get(key):
+        return request.args.get(key)
+    if request.cookies.get(key):
+        return request.cookies.get(key)
+    return DEFAULTS[key]
+
+
+
 @app.route("/")
-#@app.route("/<publication>")
-
-# def bbc():
-#     return get_news('bbc')
-
-# @app.route("/cnn")
-# def cnn():
-#     return get_news('cnn')
-
-# @app.route("/fox")
-# def fox():
-#     return get_news("fox")
-
 
 def home():
     # get customized headlines, based on user input or default
-    publication = request.args.get('publication')
-    if not publication:
-        publication = DEFAULTS['publication']
-    articles = get_news(publication)
+    # publication = request.args.get('publication')
+    # if not publication:
+    #     publication = request.cookies.get("publication")
+    #     if not publication:
+    #         publication = DEFAULTS['publication']
+    # articles = get_news(publication)
     # get customized weather based on user input or default
-    city = request.args.get('city')
-    if not city:
-        city = DEFAULTS['city']
+
+    # city = request.args.get('city')
+    # if not city:
+    #     city = DEFAULTS['city']
+    # weather = get_weather(city)
+    #
+
+
+    # # get customized currency based on user input or default
+    # currency_from = request.args.get("currency_from")
+    # if not currency_from:
+    #     currency_from = DEFAULTS['currency_from']
+    # currency_to = request.args.get("currency_to")
+    # if not currency_to:
+    #     currency_to = DEFAULTS['currency_to']
+    # rate, currencies = get_rate(currency_from, currency_to)
+
+    # get customised headlines, based on user input or default
+    publication = get_value_with_fallback("publication")
+    articles = get_news(publication)
+
+    # get customised weather based on user input or default
+    city = get_value_with_fallback("city")
     weather = get_weather(city)
-    # get customized currency based on user input or default
-    currency_from = request.args.get("currency_from")
-    if not currency_from:
-        currency_from = DEFAULTS['currency_from']
-    currency_to = request.args.get("currency_to")
-    if not currency_to:
-        currency_to = DEFAULTS['currency_to']
+
+    # get customised currency based on user input or default
+    currency_from = get_value_with_fallback("currency_from")
+    currency_to = get_value_with_fallback("currency_to")
     rate, currencies = get_rate(currency_from, currency_to)
-    return render_template("home.html", Headlines=publication.upper() + " Headlines", articles=articles,
-                           weather=weather,currency_from=currency_from, currency_to=currency_to, rate=rate, currencies=sorted(currencies))
+
+
+    response = make_response(render_template("home.html", Headlines=publication.upper() + " Headlines", articles=articles,
+                           weather=weather,currency_from=currency_from, currency_to=currency_to, rate=rate, currencies=sorted(currencies)))
+    expires = datetime.datetime.now() + datetime.timedelta(days=365)
+    response.set_cookie("publication", publication, expires=expires)
+    response.set_cookie("city", city, expires=expires)
+    response.set_cookie("currency_from",
+                        currency_from, expires=expires)
+    response.set_cookie("currency_to", currency_to, expires=expires)
+    return response
 
 
 

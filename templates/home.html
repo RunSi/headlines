@@ -2,16 +2,61 @@
     <head>
         <title>Simon Hart Headlines</title>
     </head>
+    <style>
+	html {
+    	font-family: "Helvetica";
+   	 background: white;
+	}
+
+	body {
+    	background: lightgrey;
+    	max-width: 900px;
+    	margin: 0 auto;
+	}
+          
+	#header {
+  		padding-top: 10;
+  		padding-left: 10;
+  		background: lightsteelblue;
+	}
+	#main{
+  		padding-left: 10;
+	}
+	input[type="text"], select {
+    	color: grey;
+    	border: 1px solid lightsteelblue;
+    	height: 30px;
+    	line-height:15px;
+    	margin: 2px 6px 16px 0px;
+		}
+	input[type="submit"] {
+    	padding: 5px 10px 5px 10px;
+    	color: black;
+    	background: lightsteelblue;
+    	border: none;
+    	box-shadow: 1px 1px 1px #4C6E91;
+		}
+		input[type="submit"]:hover{
+    	background: steelblue;
+		}
+	</style>
     <body>
-        <h1>Simon Hart's Great Page</h1>
-        <h2>Current weather</h2>
+        <div id="header">
+    		<h1>Simon's page</h1>
+    		
+    		<p>Headlines. Currency. Weather.</p>
+    		<hr />
+    		
+		</div>
+		<div id = "main">
+		<h2>Current Weather</h2>
         <form>
   			<input type="text" name="city" placeholder="weather search">
   			<input type="submit" value="Submit">
 		</form>
   		<p>City: <b>{{weather.city}},  {{weather.country}}</b></p>
   		<p>{{weather.description}} |  {{weather.temperature}}℃</p>
-  		<h2>Currency</h2>
+  		<h2>Currency Exchange Rates</h2>
   		<form>
     		from: <select name="currency_from">
             		{% for currency in currencies %}
@@ -38,5 +83,6 @@
         	<p>{{article.summary}}</p>
         	<hr />
         {% endfor %}
+        </div>
     </body>
 </html>
